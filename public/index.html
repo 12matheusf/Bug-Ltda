@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neto Cabeleireiro & Barbearia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-950 text-neutral-100 font-sans antialiased">
+
+    <header class="flex flex-col items-center justify-center pt-8 pb-4 px-4">
+        <img src="logo.png" alt="Neto Cabeleireiro Logo" class="w-40 h-40 object-contain rounded-full border-2 border-amber-500/30 p-1 shadow-lg bg-neutral-900 mb-2">
+        <h1 class="text-2xl font-bold tracking-wider text-amber-500 text-center">NETO CABELEIREIRO</h1>
+        <p class="text-xs text-neutral-400 tracking-widest uppercase mt-1">Desde 2014 • Tradição & Estilo</p>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 pb-12">
+        <section class="bg-neutral-900 border border-neutral-800 rounded-xl p-4 mb-6 shadow-md">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-amber-500 mb-3 border-b border-neutral-800 pb-1">Tabela de Serviços</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>✂️ Corte Masculino</span><span class="font-bold text-amber-400">R$ 45,00</span></div>
+                <div class="flex justify-between"><span>🪒 Barba Completa</span><span class="font-bold text-amber-400">R$ 35,00</span></div>
+                <div class="flex justify-between text-amber-500 font-medium"><span>🔥 Combo (Corte + Barba)</span><span class="font-bold">R$ 70,00</span></div>
+            </div>
+        </section>
+
+        <section class="bg-neutral-900 border border-neutral-800 rounded-xl p-5 shadow-md">
+            <h2 class="text-lg font-bold mb-4 text-center">Agende seu Horário</h2>
+            
+            <form id="formAgendamento" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Seu Nome</label>
+                    <input type="text" id="nome" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">WhatsApp de Contato</label>
+                    <input type="tel" id="telefone" placeholder="(11) 99999-9999" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Escolha o Serviço</label>
+                    <select id="servico" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition text-neutral-200">
+                        <option value="Corte Masculino">Corte Masculino</option>
+                        <option value="Barba Completa">Barba Completa</option>
+                        <option value="Combo (Corte + Barba)">Combo (Corte + Barba)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Data</label>
+                        <input type="date" id="data" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Horário</label>
+                        <input type="time" id="hora" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold py-3 rounded-lg text-sm uppercase tracking-wider transition duration-200 shadow-md transform active:scale-95 mt-2">
+                    Confirmar e Enviar
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('formAgendamento').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dados = {
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                servico: document.getElementById('servico').value,
+                data: document.getElementById('data').value,
+                hora: document.getElementById('hora').value
+            };
+
+            try {
+                // Requisição POST para o nosso backend Node.js
+                const response = await fetch('/api/agendar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    alert('Agendamento recebido! Redirecionando para o WhatsApp de testes...');
+                    // Abre o link gerado pelo backend em uma nova aba
+                    window.open(resultado.whatsappUrl, '_blank');
+                } else {
+                    alert('Erro no agendamento: ' + resultado.error);
+                }
+            } catch (error) {
+                console.error('Erro ao conectar com o backend:', error);
+                alert('Erro interno ao tentar agendar.');
+            }
+        });
+    </script>
+</body>
+</html>
